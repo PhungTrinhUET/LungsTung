@@ -41,9 +41,5 @@ int main ()
     cout <<"\n Please Enter your choice ! ";
     cin >> choice;
     
-    switch (choice)
-    {
-        case 1:
-        
-    }
+    
 }
