@@ -1,4 +1,3 @@
-
 #include <SoftwareSerial.h>
 #include <string.h>
 //  Sensor configuration
@@ -6,6 +5,11 @@ SoftwareSerial mySerial(16, 17); // RX, TX
 
 char                 databuffer[35];
 double               temp;
+
+const int buttonPin = 4;  // D4 (GPIO 4)
+int eventCount = 0;
+bool buttonState = false;
+bool lastButtonState = false;
 
 void getBuffer()                                                                    //Get weather status data
 {
@@ -106,10 +110,29 @@ void setup()
 {
   Serial.begin(115200);
   mySerial.begin(9600);
+    pinMode(buttonPin, INPUT_PULLUP);  // Set the button pin as input with internal pull-up resistor
+ 
 }
 
 void loop()
 {
+  //testing
+   Serial.print("Testing ");
+   // check wifi connection
+
+  // Read data from Weather sation
+  //ReadWeatherStation();
+
+  // Counting FAW 
+  CountingFAW();
+  // Send data to server via wifi
+
+  // Delay
+    delay(1000);
+
+}
+
+void ReadWeatherStation(){
   getBuffer();
   Serial.print("Wind Direction: ");
   Serial.print(WindDirection());
@@ -137,5 +160,18 @@ void loop()
   Serial.println("hPa");
   Serial.println("");
   Serial.println("");
-  delay(1000);
+
+}
+void CountingFAW() {
+  buttonState = digitalRead(buttonPin);
+
+  // Check for a button press (when the button state changes from HIGH to LOW)
+  if (buttonState == LOW && lastButtonState == HIGH) {
+    eventCount++;
+    Serial.print("Event Count: ");
+    Serial.println(eventCount);
+    delay(200);  // Debounce delay to prevent multiple counts from a single press
+  }
+
+  lastButtonState = buttonState;
 }
