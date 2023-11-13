@@ -1,0 +1,25 @@
+import paho.mqtt.client as mqtt
+import requests
+import json
+
+def on_message(client, userdata, msg):
+    payload = json.loads(msg.payload)
+    temperature = payload["temperature"]
+    humidity = payload["humidity"]
+
+    # Gửi dữ liệu lên ThingsBoard
+    thingsboard_url = "http://localhost:8080/api/v1/YOUR_ACCESS_TOKEN/telemetry"
+    data = {"temperature": temperature, "humidity": humidity}
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(thingsboard_url, data=json.dumps(data), headers=headers)
+    print(response.text)
+
+client = mqtt.Client()
+client.on_message = on_message
+
+broker_address = "192.168.1.148"
+client.connect(broker_address, 1884, 60)  # Đổi cổng kết nối MQTT thành 1884  
+
+client.subscribe("esp32/sensors")
+client.loop_forever()
+
